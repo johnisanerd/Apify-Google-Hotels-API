@@ -19,21 +19,22 @@ client = ApifyClient(os.getenv("APIFY_API_TOKEN"))
 
 # Prepare the Actor input
 run_input = {
-    "q": "hotels in South Bend Indiana",
+    "q": "hotels in New York City",
     "gl": "us",
     "hl": "en",
     "currency": "USD",
-    "check_in_date": "2025-12-13",
-    "check_out_date": "2025-12-14",
+    "check_in_date": "2026-12-13",
+    "check_out_date": "2026-12-14",
     "max_pages": 1
 }
 
-for page in range(1, 10):
+
+for page in range(1, 2):
+    run_input["max_pages"] = page
     # Run the Actor and wait for it to finish
     run = client.actor("johnvc/google-hotels-search-scraper").call(run_input=run_input)
-    run_input["page"] = page
     
-# Fetch and print Actor results from the run's dataset (if there are any)
-rich.print("💾 Check your data here: https://console.apify.com/storage/datasets/" + run["defaultDatasetId"])
-for item in client.dataset(run["defaultDatasetId"]).iterate_items():
-    rich.print(item)
+    # Fetch and print Actor results from the run's dataset (if there are any)
+    rich.print("💾 Check your data here: https://console.apify.com/storage/datasets/" + run["defaultDatasetId"])
+    for item in client.dataset(run["defaultDatasetId"]).iterate_items():
+        rich.print(item)
