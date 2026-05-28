@@ -207,4 +207,4 @@ Transform your hotel search automation with the most reliable and feature‑rich
 
 [**Made with ❤️**](https://apify.com/johnvc?fpr=9n7kx3)
 
-Last Updated: 2025.11.26
+Last Updated: 2026.05.29
