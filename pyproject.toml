@@ -1,11 +1,13 @@
 [project]
-name = "apify-google-Hotels-api"
+name = "apify-google-hotels-api"
 version = "0.1.0"
-description = "Google Hotels API - Access Google Hotels Using Python"
+description = "Example client for the Google Hotels API Apify Actor"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "apify-client>=2.3.0",
-    "python-dotenv>=1.2.1",
-    "rich>=14.2.0",
+    "apify-client>=3.0.0",
+    "python-dotenv>=1.0.0",
 ]
+
+[tool.uv]
+package = false
