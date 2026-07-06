@@ -7,6 +7,8 @@
 
 The Google Hotels API searches Google Hotels and returns clean, structured JSON: hotel and vacation-rental listings with nightly and total prices, deals, star class and property type, ratings and review counts, amenities, images, descriptions, addresses and GPS coordinates, and check-in/check-out times. Search by location query or fetch one property by token. Supports advanced filters, vacation rentals, localization (country, language, currency), and multi-page pagination.
 
+**New:** three additional modes via the `search_type` input - **autocomplete** (destination and hotel name suggestions with property tokens), **photos** (a property's full photo gallery), and **reviews** (paginated guest reviews with ratings, text, and sources). Each has its own runnable example script in this repo.
+
 ## Video Walkthrough
 
 [![Watch the walkthrough](https://img.youtube.com/vi/jREWahDGhJM/maxresdefault.jpg)](https://www.youtube.com/watch?v=jREWahDGhJM)
@@ -39,9 +41,12 @@ The Google Hotels API searches Google Hotels and returns clean, structured JSON:
    # Get your free API key at: https://apify.com?fpr=9n7kx3
    ```
 
-4. **Run the example**
+4. **Run the examples**
    ```bash
-   uv run python google-hotels-api.py
+   uv run python google-hotels-api.py            # hotel search (the classic quick start)
+   uv run python google-hotels-autocomplete.py   # destination + hotel name suggestions
+   uv run python google-hotels-photos.py         # full photo gallery for one hotel
+   uv run python google-hotels-reviews.py        # guest reviews for one hotel
    ```
 
 ### Alternative: set the API key directly
@@ -54,7 +59,7 @@ uv run python google-hotels-api.py
 
 **Rich property data.** Each result includes nightly and total prices, deals, ratings and review counts, amenities, images, descriptions, GPS coordinates, and check-in/check-out times, so you can compare properties directly.
 
-**Two retrieval modes.** Search by a location query, or pass a `property_token` from a prior result to fetch full details for one specific property.
+**Four retrieval modes.** Search by a location query, fetch full details for one property by `property_token`, resolve partial queries into destinations and hotels with autocomplete, or pull a property's complete photo gallery and guest reviews.
 
 **Powerful filters.** Constrain by price range, star class, guest rating, amenities, and property type, and switch to vacation rentals with bedroom and bathroom filters.
 
@@ -66,6 +71,9 @@ uv run python google-hotels-api.py
 
 ### Core Capabilities
 - **Location-query search** or single-property lookup by token
+- **Autocomplete suggestions** for partial queries, with property tokens for chaining
+- **Photo galleries** with full-size and thumbnail URLs, organized by section
+- **Guest reviews** with ratings, text, dates, sources, and sort options
 - **Localization** by country, language, and currency
 - **Advanced filters**: price range, star class, guest rating, amenities, property type
 - **Vacation-rental mode** with bedroom and bathroom filters
@@ -120,14 +128,47 @@ uv run python google-hotels-api.py
 }
 ```
 
+### Autocomplete suggestions (see `google-hotels-autocomplete.py`)
+```json
+{
+  "search_type": "autocomplete",
+  "q": "hotels in par",
+  "gl": "us",
+  "hl": "en"
+}
+```
+Returns one dataset item per suggestion. Suggestions for specific hotels include a `property_token` you can chain into photos, reviews, or property details.
+
+### Property photos (see `google-hotels-photos.py`)
+```json
+{
+  "search_type": "photos",
+  "property_token": "ChUIksaK9_ij5_kYGgkvbS8wNjJ3YzIQAQ",
+  "max_pages": 1
+}
+```
+Returns one dataset item per photo (typically 100-200 per property) with `photo_url`, `thumbnail_url`, dimensions, gallery section, and source.
+
+### Guest reviews (see `google-hotels-reviews.py`)
+```json
+{
+  "search_type": "reviews",
+  "property_token": "ChUIksaK9_ij5_kYGgkvbS8wNjJ3YzIQAQ",
+  "reviews_sort_by": "2",
+  "max_pages": 2
+}
+```
+Returns one dataset item per review with rating, text, date, source platform, reviewer details, and the hotel's response when one exists. Sort with `reviews_sort_by`: `"1"` most helpful, `"2"` most recent, `"3"` highest score, `"4"` lowest score.
+
 ## Input Parameters
 
 Either `q` (search query) or `property_token` is required.
 
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
-| `q` | `string` | Yes* | - | Search query, e.g. `hotels in Paris`, `vacation rentals in Miami`. |
-| `property_token` | `string` | Yes* | - | Token for a single property (from a prior result). Returns detailed property info. |
+| `search_type` | `string` | No | `search` | `search`, `autocomplete`, `photos`, or `reviews`. |
+| `q` | `string` | Yes* | - | Search query, e.g. `hotels in Paris`. Required for `search` (unless `property_token` is set) and `autocomplete`. |
+| `property_token` | `string` | Yes* | - | Token for a single property (from a prior result or autocomplete). Required for `photos` and `reviews`; returns detailed property info in `search` mode. |
 | `gl` | `string` | No | `us` | Country code (ISO 3166-1 alpha-2). |
 | `hl` | `string` | No | `en` | Language code (ISO 639-1). |
 | `currency` | `string` | No | (by country) | Currency code (ISO 4217), e.g. `USD`, `EUR`. |
@@ -140,7 +181,9 @@ Either `q` (search query) or `property_token` is required.
 | `hotel_class` | `string` | No | - | Comma-separated class levels `2`-`5`. |
 | `guest_rating` | `string` | No | `0.0` | Minimum guest rating (0.0 to 5.0). |
 | `vacation_rentals` | `boolean` | No | `false` | Include vacation rentals (enables `bedrooms`/`bathrooms`). |
-| `max_pages` | `integer` | No | `1` | Maximum pages to fetch (`0` = no limit). |
+| `reviews_sort_by` | `string` | No | `1` | Reviews order: `1` most helpful, `2` most recent, `3` highest score, `4` lowest score. |
+| `reviews_category_token` | `string` | No | - | Filter reviews by a category token from a property's reviews breakdown. |
+| `max_pages` | `integer` | No | `1` | Maximum pages to fetch (`0` = no limit). Applies to search, photos, and reviews. |
 | `output_file` | `string` | No | - | Optional filename to save results. |
 
 Additional filters (`amenities`, `property_type`, `rental_type`) accept Google's integer IDs; see the Actor page for the full reference.

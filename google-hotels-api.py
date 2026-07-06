@@ -11,6 +11,8 @@ Get your free Apify API key at: https://apify.com?fpr=9n7kx3
 """
 
 import os
+from datetime import date, timedelta
+
 from dotenv import load_dotenv
 from apify_client import ApifyClient
 
@@ -18,6 +20,10 @@ load_dotenv()
 
 # Initialize the Apify client with your API token (read from .env)
 client = ApifyClient(os.getenv("APIFY_API_TOKEN"))
+
+# Stay dates are computed relative to today so this example always works
+check_in = date.today() + timedelta(days=30)
+check_out = check_in + timedelta(days=2)
 
 # Build the Actor input.
 # max_pages is kept at 1 to keep this first run inexpensive (each page is billed
@@ -27,8 +33,8 @@ run_input = {
     "gl": "us",                      # country code
     "hl": "en",                      # language code
     "currency": "USD",
-    "check_in_date": "2026-06-29",   # YYYY-MM-DD
-    "check_out_date": "2026-07-01",  # YYYY-MM-DD
+    "check_in_date": check_in.isoformat(),    # YYYY-MM-DD
+    "check_out_date": check_out.isoformat(),  # YYYY-MM-DD
     "adults": 2,
     "max_pages": 1,
 }
