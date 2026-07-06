@@ -235,6 +235,10 @@ A real result for `hotels in Paris` (one item per page; the `properties` array i
 
 ---
 
+## n8n integration
+
+Available as an n8n community node, **[n8n-nodes-google-hotels-api](https://www.npmjs.com/package/n8n-nodes-google-hotels-api)**. In n8n: Settings, Community Nodes, install `n8n-nodes-google-hotels-api`, then use it in any workflow (it also works as an AI Agent tool). Version 0.2.0 adds Get Autocomplete Suggestions, Get Photos, and Get Reviews operations.
+
 ## Use as an MCP tool
 
 You can load the Google Hotels API as an MCP tool so assistants call it for you. The MCP server URL preloads just this one Actor:
