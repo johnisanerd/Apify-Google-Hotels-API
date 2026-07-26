@@ -377,4 +377,4 @@ More help: https://docs.apify.com/platform/integrations/mcp
 
 *Use the Google Hotels API to power price monitoring, travel apps, and market research with reliable, structured results.*
 
-Last Updated: 2026.07.25
+Last Updated: 2026.07.26
